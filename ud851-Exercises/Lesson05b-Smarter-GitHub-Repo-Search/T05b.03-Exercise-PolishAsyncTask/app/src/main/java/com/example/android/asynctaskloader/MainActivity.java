@@ -21,6 +21,7 @@ import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -77,6 +78,7 @@ public class MainActivity extends AppCompatActivity implements
         /*
          * Initialize the loader
          */
+        Log.d("==========","==========onCreate ");
         getSupportLoaderManager().initLoader(GITHUB_SEARCH_LOADER, null, this);
     }
 
@@ -163,12 +165,16 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public Loader<String> onCreateLoader(int id, final Bundle args) {
+        Log.d("==========","==========onCreateLoader ");
         return new AsyncTaskLoader<String>(this) {
 
             // TODO (1) Create a String member variable called mGithubJson that will store the raw JSON
+            String mGithubJson;
+
 
             @Override
             protected void onStartLoading() {
+                Log.d("==========","==========onStartLoading ");
 
                 /* If no arguments were passed, we don't have a query to perform. Simply return. */
                 if (args == null) {
@@ -182,7 +188,9 @@ public class MainActivity extends AppCompatActivity implements
                 mLoadingIndicator.setVisibility(View.VISIBLE);
 
                 // TODO (2) If mGithubJson is not null, deliver that result. Otherwise, force a load
-                forceLoad();
+                if(mGithubJson != null)
+                    deliverResult(mGithubJson);
+                else forceLoad();
             }
 
             @Override
@@ -200,6 +208,7 @@ public class MainActivity extends AppCompatActivity implements
                 try {
                     URL githubUrl = new URL(searchQueryUrlString);
                     String githubSearchResults = NetworkUtils.getResponseFromHttpUrl(githubUrl);
+                    Log.d("==========","==========loadInBackground "+githubSearchResults);
                     return githubSearchResults;
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -208,6 +217,13 @@ public class MainActivity extends AppCompatActivity implements
             }
 
             // TODO (3) Override deliverResult and store the data in mGithubJson
+
+            @Override
+            public void deliverResult(String data) {
+                Log.d("==========","==========deliverResult "+data);
+                mGithubJson = data;
+                super.deliverResult(data);
+            }
             // TODO (4) Call super.deliverResult after storing the data
         };
     }
@@ -216,11 +232,13 @@ public class MainActivity extends AppCompatActivity implements
     public void onLoadFinished(Loader<String> loader, String data) {
 
         /* When we finish loading, we want to hide the loading indicator from the user. */
+
         mLoadingIndicator.setVisibility(View.INVISIBLE);
         /*
          * If the results are null, we assume an error has occurred. There are much more robust
          * methods for checking errors, but we wanted to keep this particular example simple.
          */
+        Log.d("==========","==========onLoadFinished "+data);
         if (null == data) {
             showErrorMessage();
         } else {
