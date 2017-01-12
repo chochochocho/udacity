@@ -17,6 +17,7 @@ package android.example.com.visualizerpreferences;
  */
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.example.com.visualizerpreferences.AudioVisuals.AudioInputReader;
 import android.example.com.visualizerpreferences.AudioVisuals.VisualizerView;
@@ -25,6 +26,9 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.widget.Toast;
 
 public class VisualizerActivity extends AppCompatActivity {
@@ -44,9 +48,9 @@ public class VisualizerActivity extends AppCompatActivity {
 
     private void defaultSetup() {
         mVisualizerView.setShowBass(true);
-        mVisualizerView.setShowMid(true);
+        mVisualizerView.setShowMid(false);
         mVisualizerView.setShowTreble(true);
-        mVisualizerView.setMinSizeScale(1);
+        //mVisualizerView.setMinSizeScale(2);
         mVisualizerView.setColor(getString(R.string.pref_color_red_value));
     }
 
@@ -124,5 +128,27 @@ public class VisualizerActivity extends AppCompatActivity {
     // orderInCategory should be 100
 
     // TODO (5) Add the menu to the menu bar
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.visualizer_menu,menu);
+
+        return true;
+    }
+
     // TODO (6) When the "Settings" menu item is pressed, open SettingsActivity
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(item.getItemId() == R.id.action_Setting)
+        {
+            Intent intent = new Intent(this,SettingsActivity.class);
+            startActivity(intent);
+
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 }
